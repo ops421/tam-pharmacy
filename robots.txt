@@ -1,4 +1,4 @@
-# DRAFT — this site still contains unfilled [[PLACEHOLDER]] tokens.
+# DRAFT: this site still contains unfilled [[PLACEHOLDER]] tokens.
 # Search indexing is blocked until the content is verified and the real
 # domain is live. To go live: replace this file with the block below.
 User-agent: *

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TAM Pharmacy — site behaviour
+   TAM Pharmacy site behaviour
    Hero is a scroll-scrubbed JPEG frame sequence drawn on <canvas>.
    Never <video> + currentTime: browsers only seek to keyframes in a compressed
    MP4, which stutters visibly on every scrub.
@@ -64,7 +64,7 @@
     if (!canvas) return;
     var w = window.innerWidth;
     var h = window.innerHeight;
-    // pixel AND style dimensions both set explicitly — no CSS %, no DPR scaling,
+    // pixel AND style dimensions both set explicitly. No CSS %, no DPR scaling,
     // no object-fit; any of those desyncs the drawing surface from the element.
     canvas.width = w;
     canvas.height = h;
@@ -137,7 +137,7 @@
   }
 
   function noFrames() {
-    // Hero art hasn't been generated yet — the CSS poster gradient carries the
+    // Hero art hasn't been generated yet. The CSS poster gradient carries the
     // section on its own. Hide the canvas so it can't paint an empty rectangle.
     if (canvas) canvas.style.display = 'none';
     hideLoader();
@@ -192,7 +192,7 @@
   metrics.forEach(function (el) {
     var raw = el.getAttribute('data-count') || '';
     // unfilled [[PLACEHOLDER]] tokens contain digits, so they must be excluded
-    // before the numeric parse — otherwise "[[METRIC_1_VALUE]]" counts to 1.
+    // before the numeric parse; otherwise "[[METRIC_1_VALUE]]" counts to 1.
     if (raw.indexOf('[[') !== -1) return;
     var num = parseFloat(raw.replace(/[^0-9.]/g, ''));
     // non-numeric values are left exactly as authored

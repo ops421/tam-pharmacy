@@ -14,7 +14,7 @@ OUT="$SITE_DIR/assets/frames"
 
 if [[ ! -f "$VIDEO" ]]; then
   echo "error: no video at $VIDEO" >&2
-  echo "generate one first — see HERO-PROMPTS.md" >&2
+  echo "generate one first, see HERO-PROMPTS.md" >&2
   exit 1
 fi
 
@@ -34,7 +34,7 @@ if [[ "$COUNT" -lt 2 ]]; then
   exit 1
 fi
 
-# site.js reads this to size the scrub timeline — no hand-edited frame count
+# site.js reads this to size the scrub timeline, no hand-edited frame count
 printf '{"count": %s, "fps": %s}\n' "$COUNT" "$FPS" > "$OUT/manifest.json"
 
 echo "wrote $COUNT frames + manifest.json"

@@ -1,16 +1,16 @@
-# TAM Pharmacy — website
+# TAM Pharmacy website
 
 Single-page lander plus three policy pages for **TAM Pharmacy**, the compounding
 and specialty pharmacy of the TAM Global medical ecosystem.
 
-Built with the Liquid Web `cinematic-sites` builder. Static HTML/CSS/JS — no
+Built with the Liquid Web `cinematic-sites` builder. Static HTML/CSS/JS. No
 build step, no framework, no npm install to deploy.
 
 ---
 
 ## Status
 
-**Draft — not ready to publish.** The site carries `[[PLACEHOLDER]]` tokens for
+**Draft, not ready to publish.** The site carries `[[PLACEHOLDER]]` tokens for
 business facts that must be verified rather than guessed (licensure, states
 served, hours, metrics, carriers). Run the gate before deploying:
 
@@ -60,7 +60,7 @@ Mono** for step indices. Film-grain overlay at 2.5% opacity, matching the parent
 
 ## Hero
 
-The hero is a **scroll-scrubbed JPEG frame sequence drawn on `<canvas>`** — not
+The hero is a **scroll-scrubbed JPEG frame sequence drawn on `<canvas>`**, not
 a `<video>`. Browsers can only seek to keyframes in a compressed MP4, so
 `video.currentTime` scrubbing stutters visibly.
 
@@ -71,7 +71,7 @@ scripts/extract-frames.sh assets/hero-loop.mp4 24
 ```
 
 That writes `assets/frames/frame-NNNN.jpg` plus a `manifest.json` holding the
-frame count. `site.js` reads the manifest — **there is no frame count to
+frame count. `site.js` reads the manifest, so **there is no frame count to
 hand-edit**. If the manifest is missing, the hero falls back to a CSS gradient
 poster and the page still works.
 
@@ -82,7 +82,7 @@ python3 -m http.server 8799
 # http://127.0.0.1:8799/index.html
 ```
 
-Use a server, not `file://` — the manifest is loaded with `fetch()`.
+Use a server, not `file://`; the manifest is loaded with `fetch()`.
 
 ## Publishing
 

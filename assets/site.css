@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TAM Pharmacy — shared stylesheet
+   TAM Pharmacy shared stylesheet
    Design tokens lifted from the live TAM Global system (tam.global/assets/site.css)
    so the two sites are genuine siblings rather than a lookalike.
    ========================================================================== */
@@ -13,7 +13,7 @@
   --panel-strong: rgba(255,255,255,0.06);
   --text: #f5f1e8;
   --muted: rgba(245,241,232,0.68);
-  --body: rgba(245,241,232,0.82);   /* primary paragraph text — never --muted */
+  --body: rgba(245,241,232,0.82);   /* primary paragraph text, never --muted */
   --line: rgba(201,160,74,0.18);
   --gold: #c9a04a;
   --gold-soft: rgba(201,160,74,0.16);
@@ -37,7 +37,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* film grain — matches parent site exactly */
+/* film grain, matches parent site exactly */
 body::after {
   content: '';
   position: fixed;
@@ -53,7 +53,7 @@ img, video, canvas { display: block; max-width: 100%; }
 
 .container { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
 
-/* skip link — keyboard accessibility */
+/* skip link, keyboard accessibility */
 .skip-link {
   position: absolute; left: -9999px; top: 0; z-index: 10000;
   padding: 12px 18px; background: var(--gold); color: #130f07;
@@ -179,15 +179,25 @@ nav.scrolled {
   display: grid; align-items: end; padding: 132px 0 64px;
 }
 #heroCanvas { position: absolute; top: 0; left: 0; z-index: 0; }
+/* Stand-in for the hero frame sequence until assets/frames/ exists.
+   Shaped like the Amber Vial scene: warm key from upper left, deep falloff to
+   near-black, so an unfinished hero still reads as a lit set and not a gap. */
 .hero-poster {
   position: absolute; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 42% 55%, rgba(201,160,74,0.20), transparent 70%),
-    radial-gradient(circle at 70% 30%, rgba(241,212,138,0.07), transparent 55%),
-    #050505;
+    radial-gradient(ellipse 42% 62% at 34% 44%, rgba(241,212,138,0.16), transparent 68%),
+    radial-gradient(ellipse 70% 80% at 30% 38%, rgba(201,160,74,0.13), transparent 72%),
+    radial-gradient(circle 340px at 74% 26%, rgba(241,212,138,0.05), transparent 70%),
+    radial-gradient(ellipse 120% 70% at 50% 118%, rgba(140,102,38,0.10), transparent 60%),
+    linear-gradient(160deg, #0b0906 0%, #070605 42%, #030303 100%);
+}
+.hero-poster::after {
+  /* soft horizon so the "surface" the vial would sit on is implied */
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.85) 100%);
 }
 /* Blends the canvas edge into the page ground so there is no visible seam.
-   Bottom-weighted only — not an edge-darkening vignette. */
+   Bottom-weighted only, not an edge-darkening vignette. */
 .hero-scrim {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(180deg,
@@ -459,9 +469,14 @@ footer { padding: 56px 0 56px; border-top: 1px solid rgba(201,160,74,0.10); }
   color: rgba(245,241,232,0.52); font-size: 0.88rem;
 }
 .footer-disclaimer {
+  /* Box stays container-width so its left edge lines up with the footer
+     columns; line length is capped with padding instead of max-width, which
+     would shrink the box and let `margin: auto` centre it out of alignment. */
   width: min(var(--max), calc(100% - 40px)); margin: 22px auto 0;
-  color: rgba(245,241,232,0.42); font-size: 0.78rem; line-height: 1.7; max-width: 90ch;
+  padding-right: 26%;
+  color: rgba(245,241,232,0.42); font-size: 0.78rem; line-height: 1.7;
 }
+@media (max-width: 980px) { .footer-disclaimer { padding-right: 0; } }
 
 /* ---------- legal / policy pages ---------- */
 .legal-hero { padding: 190px 0 60px; border-bottom: 1px solid rgba(201,160,74,0.10); }
