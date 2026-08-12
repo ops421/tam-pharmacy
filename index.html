@@ -30,6 +30,12 @@
   "telephone": "+1-888-423-5988",
   "email": "contact@tampharmacy.com",
   "parentOrganization": { "@type": "Organization", "name": "TAM Global", "url": "https://tam.global/" },
+  "openingHoursSpecification": [{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "opens": "08:00",
+    "closes": "18:00"
+  }],
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "525 Metroplex Dr",
@@ -249,9 +255,9 @@
       <aside class="contact-aside">
         <h3>Hours</h3>
         <ul class="hours-list">
-          <li><b>Mon – Fri</b> <span>[[HOURS_WEEKDAY]]</span></li>
-          <li><b>Saturday</b> <span>[[HOURS_SATURDAY]]</span></li>
-          <li><b>Sunday</b> <span>[[HOURS_SUNDAY]]</span></li>
+          <li><b>Mon to Fri</b> <span>8:00 AM to 6:00 PM CT</span></li>
+          <li><b>Saturday</b> <span>Closed</span></li>
+          <li><b>Sunday</b> <span>Closed</span></li>
         </ul>
         <p style="margin-top:22px;font-size:0.88rem;color:var(--muted)">
           After-hours prescriber line for urgent clinical questions:
