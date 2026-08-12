@@ -179,32 +179,34 @@ nav.scrolled {
   display: grid; align-items: end; padding: 132px 0 64px;
 }
 #heroCanvas { position: absolute; top: 0; left: 0; z-index: 0; }
-/* Stand-in for the hero frame sequence until assets/frames/ exists.
-   Shaped like the Amber Vial scene: warm key from upper left, deep falloff to
-   near-black, so an unfinished hero still reads as a lit set and not a gap. */
+/* First frame of the hero video. Shown until the canvas has painted, so the
+   handover is invisible rather than a swap between two different images. */
 .hero-poster {
   position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 42% 62% at 34% 44%, rgba(241,212,138,0.16), transparent 68%),
-    radial-gradient(ellipse 70% 80% at 30% 38%, rgba(201,160,74,0.13), transparent 72%),
-    radial-gradient(circle 340px at 74% 26%, rgba(241,212,138,0.05), transparent 70%),
-    radial-gradient(ellipse 120% 70% at 50% 118%, rgba(140,102,38,0.10), transparent 60%),
-    linear-gradient(160deg, #0b0906 0%, #070605 42%, #030303 100%);
+  background: url('hero-poster.jpg') no-repeat center center / cover, #050505;
 }
 .hero-poster::after {
-  /* soft horizon so the "surface" the vial would sit on is implied */
+  /* floor falloff, so the subject sits in a void rather than on a flat panel */
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 58%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.85) 100%);
+  background: linear-gradient(180deg, transparent 52%, rgba(0,0,0,0.45) 78%, rgba(3,3,3,0.9) 100%);
 }
 /* Blends the canvas edge into the page ground so there is no visible seam.
    Bottom-weighted only, not an edge-darkening vignette. */
 .hero-scrim {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(180deg,
-    rgba(5,5,5,0.30) 0%,
-    rgba(5,5,5,0.20) 30%,
-    rgba(5,5,5,0.72) 74%,
-    rgba(5,5,5,0.97) 100%);
+  background:
+    /* left-weighted, so the headline keeps contrast over the bright glass */
+    linear-gradient(90deg,
+      rgba(5,5,5,0.88) 0%,
+      rgba(5,5,5,0.62) 32%,
+      rgba(5,5,5,0.18) 62%,
+      rgba(5,5,5,0.05) 100%),
+    /* bottom falloff dissolves the canvas edge into the page ground */
+    linear-gradient(180deg,
+      rgba(5,5,5,0.42) 0%,
+      rgba(5,5,5,0.28) 28%,
+      rgba(5,5,5,0.78) 76%,
+      rgba(5,5,5,0.98) 100%);
 }
 .hero-grid {
   position: relative; z-index: 2;
@@ -536,6 +538,15 @@ footer { padding: 56px 0 56px; border-top: 1px solid rgba(201,160,74,0.10); }
   }
   .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero-card { justify-self: start; width: 100%; }
+  /* The copy spans the full width here, so a left-weighted scrim protects
+     nothing. Darken evenly instead, weighted to the lower half. */
+  .hero-scrim {
+    background: linear-gradient(180deg,
+      rgba(5,5,5,0.52) 0%,
+      rgba(5,5,5,0.46) 22%,
+      rgba(5,5,5,0.80) 62%,
+      rgba(5,5,5,0.97) 100%);
+  }
   .stack-rail { position: relative; top: 0; }
   .nav-links { display: none; }
   .nav-toggle { display: inline-flex; }

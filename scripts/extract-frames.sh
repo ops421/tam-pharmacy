@@ -4,12 +4,16 @@
 # The site draws JPEG frames on a <canvas>. It never uses <video> + currentTime:
 # browsers can only seek to keyframes in a compressed MP4, so scrubbing stutters.
 #
-#   usage: scripts/extract-frames.sh assets/hero-loop.mp4 [fps]
+#   usage: scripts/extract-frames.sh assets/hero-loop.mp4 [fps] [jpeg-q]
+#
+# jpeg-q is the ffmpeg -q:v scale, 2 = best, 31 = worst. 6 is a good balance:
+# the frames are preloaded before the hero can scrub, so total weight matters.
 set -euo pipefail
 
 SITE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VIDEO="${1:-$SITE_DIR/assets/hero-loop.mp4}"
 FPS="${2:-24}"
+QUALITY="${3:-6}"
 OUT="$SITE_DIR/assets/frames"
 
 if [[ ! -f "$VIDEO" ]]; then
@@ -26,7 +30,7 @@ mkdir -p "$OUT"
 echo "extracting ${FPS}fps from $(basename "$VIDEO") ..."
 ffmpeg -loglevel error -i "$VIDEO" \
   -vf "fps=${FPS},scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720" \
-  -q:v 4 "$OUT/frame-%04d.jpg"
+  -q:v "$QUALITY" "$OUT/frame-%04d.jpg"
 
 COUNT=$(find "$OUT" -name 'frame-*.jpg' | wc -l | tr -d ' ')
 if [[ "$COUNT" -lt 2 ]]; then
@@ -35,7 +39,7 @@ if [[ "$COUNT" -lt 2 ]]; then
 fi
 
 # site.js reads this to size the scrub timeline, no hand-edited frame count
-printf '{"count": %s, "fps": %s}\n' "$COUNT" "$FPS" > "$OUT/manifest.json"
+printf '{"count": %s, "fps": %s, "q": %s}\n' "$COUNT" "$FPS" "$QUALITY" > "$OUT/manifest.json"
 
 echo "wrote $COUNT frames + manifest.json"
 du -sh "$OUT" | awk '{print "frames dir: " $1}'
