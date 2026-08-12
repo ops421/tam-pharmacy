@@ -156,14 +156,12 @@
     hideLoader();
   }
 
-  /* ---------------- hero copy fades out, revealing the animation ---------------- */
-  if (hasGSAP && !reduceMotion && document.querySelector('.hero-grid')) {
-    gsap.to('.hero-grid', {
-      opacity: 0,
-      y: -60,
-      ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: '10% top', end: '38% top', scrub: true }
-    });
+  /* ---------------- hero copy ----------------
+     The headline and supporting copy stay at full opacity for the whole hero.
+     They used to fade out to reveal the animation, but that traded away the
+     readability of the most important text on the page. Only the scroll hint
+     fades, since it has done its job once you have started scrolling. */
+  if (hasGSAP && !reduceMotion && document.querySelector('.scroll-hint')) {
     gsap.to('.scroll-hint', {
       opacity: 0,
       ease: 'none',

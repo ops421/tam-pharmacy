@@ -178,7 +178,15 @@ nav.scrolled {
   overflow: hidden; isolation: isolate;
   display: grid; align-items: end; padding: 132px 0 64px;
 }
-#heroCanvas { position: absolute; top: 0; left: 0; z-index: 0; }
+/* The clip is far brighter and more saturated than the page. Knocking it back
+   here rather than re-encoding the frames keeps it adjustable in one place:
+   opacity lets the near-black ground show through, saturate tames the cyan
+   that fights the gold, brightness stops it competing with the copy. */
+#heroCanvas {
+  position: absolute; top: 0; left: 0; z-index: 0;
+  opacity: 0.58;
+  filter: saturate(0.68) brightness(0.82) contrast(1.05);
+}
 /* First frame of the hero video. Shown until the canvas has painted, so the
    handover is invisible rather than a swap between two different images. */
 .hero-poster {
