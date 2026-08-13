@@ -172,7 +172,11 @@ nav.scrolled {
 }
 
 /* ---------- hero (scroll-scrubbed canvas) ---------- */
-.hero { position: relative; height: 300vh; }
+/* 200vh, so the scrub range is one viewport. With 40 frames that is roughly
+   22px of scroll per frame at 900px tall, tighter than the old 300vh/61-frame
+   pairing managed at 29px. Shortening the hero and thinning the sequence
+   together buys back the smoothness that thinning alone would cost. */
+.hero { position: relative; height: 200vh; }
 .hero-sticky {
   position: sticky; top: 0; height: 100svh;
   overflow: hidden; isolation: isolate;
@@ -539,7 +543,7 @@ footer { padding: 56px 0 56px; border-top: 1px solid rgba(201,160,74,0.10); }
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
   section { padding: 88px 0; }
-  .hero { height: 240vh; }
+  .hero { height: 170vh; }
   .hero-grid, .stack, .metrics-grid, .cap-grid, .principles-grid,
   .contact-shell, .statement-panel, .footer-top {
     grid-template-columns: 1fr;

@@ -34,7 +34,8 @@ assets/
   site.js                      hero scrub, nav, marquee, tilt, counters
   favicon.svg                  gold TAM mark on near-black
   logo/tam-pharmacy.svg        vector wordmark, currentColor-driven
-  frames/                      hero JPEG sequence + manifest.json (generated)
+  frames/                      hero WebP sequence + manifest.json (generated)
+  hero-loop.mp4                source video, gitignored (see below)
 scripts/
   extract-frames.sh            video -> frames + manifest
   check-placeholders.sh        pre-publish gate
@@ -67,7 +68,7 @@ a `<video>`. Browsers can only seek to keyframes in a compressed MP4, so
 Generate the art (see `HERO-PROMPTS.md`), then:
 
 ```bash
-scripts/extract-frames.sh                      # defaults: 12fps, WebP q75, 1280px
+scripts/extract-frames.sh assets/hero-loop.mp4 8            # current: 8fps, WebP q75, 1280px
 scripts/extract-frames.sh assets/hero-loop.mp4 16 80 1280   # smoother, heavier
 ```
 
@@ -79,8 +80,13 @@ back to the poster image and the page still works.
 ### Weight
 
 Visitors download the whole sequence, so it is the single biggest thing on the
-page. Current settings put it at **3.3MB / 61 frames**, down from 9.6MB / 121
+page. Current settings put it at **2.2MB / 40 frames**, down from 9.6MB / 121
 JPEG frames.
+
+Frame count and hero height are coupled. The scrub range is `hero height minus
+one viewport`, so at 200vh on a 900px screen, 40 frames works out to about 22px
+of scroll per frame. Shortening the hero alongside thinning the sequence keeps
+the scrub tighter than it was at 300vh with 61 frames.
 
 | Lever | Effect |
 |---|---|
@@ -94,6 +100,13 @@ Frames load in three passes so the page never waits on the hero: frame 1 first
 scrubbing, then the remainder at low priority. `drawFrame` falls back to the
 nearest loaded frame, so a half-loaded sequence scrubs at reduced resolution
 instead of freezing.
+
+### Source video
+
+`assets/hero-loop.mp4` is gitignored. The site never requests it, but GitHub
+Pages would serve it and it would sit in every clone. A backup lives at
+`liquid-web/sites/_source/tam-pharmacy/hero-loop.mp4`. Keep it: the frames
+cannot be regenerated without it.
 
 ## Local preview
 

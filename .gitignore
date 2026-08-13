@@ -1,3 +1,6 @@
 .DS_Store
 assets/hero.jpg
-# assets/hero-loop.mp4 is kept on purpose: it is the source for the frames
+# Hero source video. Kept on disk for re-encoding, never published: GitHub
+# Pages would serve it and the site never requests it. Backup copy lives in
+# liquid-web/sites/_source/tam-pharmacy/.
+assets/hero-loop.mp4
