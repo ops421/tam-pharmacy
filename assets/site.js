@@ -50,8 +50,15 @@
     loader.style.opacity = '0';
     setTimeout(function () { loader.style.display = 'none'; }, 600);
   }
-  // never trap the visitor behind the loader
-  setTimeout(hideLoader, 6000);
+  // The CSS poster is the hero's own first frame, so there is nothing worth
+  // waiting for: lift the loader as soon as that 40KB image is in, and never
+  // gate on the frame sequence, which is two orders of magnitude bigger.
+  (function () {
+    var poster = new Image();
+    poster.onload = poster.onerror = hideLoader;
+    poster.src = 'assets/hero-poster.webp';
+    setTimeout(hideLoader, 900);   // hard ceiling regardless of network
+  })();
 
   /* ---------------- hero frame sequence ---------------- */
   var canvas = document.getElementById('heroCanvas');
@@ -62,6 +69,7 @@
   var wantedFrame = 0;      // index the scroll position is asking for
   var loadedCount = 0;
   var frameExt = 'webp';    // overridden by the manifest
+  var onFrameDone = null;   // chains the progressive loading passes
 
   function resize() {
     if (!canvas) return;
@@ -124,9 +132,9 @@
       // Redraw if this frame is the one the current scroll position wants, or
       // if we are still showing a stand-in for it.
       if (index - 1 === wantedFrame || current === -1) drawFrame(wantedFrame, true);
-      if (index === 1) hideLoader();
+      if (onFrameDone) onFrameDone(index);
     };
-    img.onerror = function () { loadedCount++; if (index === 1) hideLoader(); };
+    img.onerror = function () { loadedCount++; if (onFrameDone) onFrameDone(index); };
     img.src = framePath(index);
     frames[index - 1] = img;
   }
@@ -136,21 +144,31 @@
     resize();
     window.addEventListener('resize', resize);
 
-    // Progressive load, in three passes. The page must not wait on the hero.
-    //   1. frame 1 alone, so something is on screen and the loader can lift
-    //   2. every Nth frame, so scrubbing works coarsely within a moment
-    //   3. everything else, at low priority, filling in behind the visitor
+    // Progressive load in three chained passes:
+    //   1. frame 1 alone
+    //   2. every Nth frame, so scrubbing works coarsely early
+    //   3. everything else, at low priority
+    //
+    // The passes are CHAINED, not fired together. Over HTTP/2 every request is
+    // multiplexed onto one connection, so dispatching all 61 at once splits the
+    // bandwidth 61 ways and the early frames land no sooner than the last.
+    // fetchPriority is a hint the server may ignore; ordering is not.
+    //
     // drawFrame falls back to the nearest loaded frame, so a partially loaded
-    // sequence scrubs smoothly rather than freezing on gaps.
-    loadFrame(1, 'high');
-
+    // sequence scrubs at reduced resolution rather than freezing on gaps.
     var STRIDE = 5;
-    setTimeout(function () {
+
+    onFrameDone = function (index) {
+      if (index !== 1) return;
+      onFrameDone = null;
       for (var i = 1 + STRIDE; i <= totalFrames; i += STRIDE) loadFrame(i, 'high');
+      // give the sparse pass a head start before saturating with the rest
       setTimeout(function () {
         for (var j = 2; j <= totalFrames; j++) loadFrame(j, 'low');
-      }, 60);
-    }, 0);
+      }, 400);
+    };
+
+    loadFrame(1, 'high');
 
     if (reduceMotion || !hasGSAP) {
       // static first frame, no scrubbing
