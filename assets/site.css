@@ -191,7 +191,7 @@ nav.scrolled {
    handover is invisible rather than a swap between two different images. */
 .hero-poster {
   position: absolute; inset: 0; z-index: 0;
-  background: url('hero-poster.jpg') no-repeat center center / cover, #050505;
+  background: url('hero-poster.webp') no-repeat center center / cover, #050505;
 }
 .hero-poster::after {
   /* floor falloff, so the subject sits in a void rather than on a flat panel */

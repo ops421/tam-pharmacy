@@ -67,13 +67,33 @@ a `<video>`. Browsers can only seek to keyframes in a compressed MP4, so
 Generate the art (see `HERO-PROMPTS.md`), then:
 
 ```bash
-scripts/extract-frames.sh assets/hero-loop.mp4 24
+scripts/extract-frames.sh                      # defaults: 12fps, WebP q75, 1280px
+scripts/extract-frames.sh assets/hero-loop.mp4 16 80 1280   # smoother, heavier
 ```
 
-That writes `assets/frames/frame-NNNN.jpg` plus a `manifest.json` holding the
-frame count. `site.js` reads the manifest, so **there is no frame count to
-hand-edit**. If the manifest is missing, the hero falls back to a CSS gradient
-poster and the page still works.
+That writes `assets/frames/frame-NNNN.webp` plus a `manifest.json` holding the
+frame count **and the extension**. `site.js` reads both, so there is nothing to
+hand-edit when the encoding changes. If the manifest is missing, the hero falls
+back to the poster image and the page still works.
+
+### Weight
+
+Visitors download the whole sequence, so it is the single biggest thing on the
+page. Current settings put it at **3.3MB / 61 frames**, down from 9.6MB / 121
+JPEG frames.
+
+| Lever | Effect |
+|---|---|
+| `fps` | Scales payload linearly. This is the main dial. |
+| WebP vs JPEG | Roughly 65% lighter on this footage. |
+| `quality` | Diminishing returns; the canvas is dimmed to 58% opacity anyway. |
+| `width` | Last resort. The canvas cover-fits, so this softens the image. |
+
+Frames load in three passes so the page never waits on the hero: frame 1 first
+(the loader lifts as soon as it paints), then every 5th frame for coarse
+scrubbing, then the remainder at low priority. `drawFrame` falls back to the
+nearest loaded frame, so a half-loaded sequence scrubs at reduced resolution
+instead of freezing.
 
 ## Local preview
 

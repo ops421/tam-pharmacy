@@ -59,6 +59,9 @@
   var frames = [];
   var totalFrames = 0;
   var current = -1;
+  var wantedFrame = 0;      // index the scroll position is asking for
+  var loadedCount = 0;
+  var frameExt = 'webp';    // overridden by the manifest
 
   function resize() {
     if (!canvas) return;
@@ -70,14 +73,35 @@
     canvas.height = h;
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
-    if (current >= 0) drawFrame(current, true);
+    // redraw what the scroll position wants, not what happens to be on screen
+    if (current >= 0) drawFrame(wantedFrame, true);
+  }
+
+  function isReady(i) {
+    var f = frames[i];
+    return !!f && f.complete && f.naturalWidth > 0;
+  }
+
+  // While the sequence is still filling in, show the closest frame we do have
+  // rather than nothing. Scrubbing then degrades to a coarser version of itself
+  // instead of freezing on the gaps.
+  function nearestReady(idx) {
+    if (isReady(idx)) return idx;
+    for (var r = 1; r < totalFrames; r++) {
+      if (idx - r >= 0 && isReady(idx - r)) return idx - r;
+      if (idx + r < totalFrames && isReady(idx + r)) return idx + r;
+    }
+    return -1;
   }
 
   function drawFrame(idx, force) {
-    if (!ctx || !frames[idx] || !frames[idx].complete || frames[idx].naturalWidth === 0) return;
-    if (idx === current && !force) return;
-    current = idx;
-    var img = frames[idx];
+    if (!ctx) return;
+    wantedFrame = idx;
+    var use = nearestReady(idx);
+    if (use < 0) return;
+    if (use === current && !force) return;
+    current = use;
+    var img = frames[use];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     var r = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
     var w = img.naturalWidth * r;
@@ -86,34 +110,47 @@
   }
 
   function framePath(i) {
-    return 'assets/frames/frame-' + String(i).padStart(4, '0') + '.jpg';
+    return 'assets/frames/frame-' + String(i).padStart(4, '0') + '.' + frameExt;
+  }
+
+  function loadFrame(index, priority) {
+    if (frames[index - 1]) return;
+    var img = new Image();
+    img.decoding = 'async';
+    if ('fetchPriority' in img) img.fetchPriority = priority;
+    img.onload = function () {
+      loadedCount++;
+      if (loaderBar) loaderBar.style.width = Math.round((loadedCount / totalFrames) * 100) + '%';
+      // Redraw if this frame is the one the current scroll position wants, or
+      // if we are still showing a stand-in for it.
+      if (index - 1 === wantedFrame || current === -1) drawFrame(wantedFrame, true);
+      if (index === 1) hideLoader();
+    };
+    img.onerror = function () { loadedCount++; if (index === 1) hideLoader(); };
+    img.src = framePath(index);
+    frames[index - 1] = img;
   }
 
   function startFrameSequence(count) {
     totalFrames = count;
-    var loaded = 0;
     resize();
     window.addEventListener('resize', resize);
 
-    for (var i = 1; i <= totalFrames; i++) {
-      (function (index) {
-        var img = new Image();
-        img.decoding = 'async';
-        img.onload = function () {
-          loaded++;
-          if (loaderBar) loaderBar.style.width = Math.round((loaded / totalFrames) * 100) + '%';
-          if (loaded === 1) drawFrame(0, true);
-          // release the page once enough frames are in to scrub smoothly
-          if (loaded >= Math.ceil(totalFrames * 0.4)) hideLoader();
-        };
-        img.onerror = function () {
-          loaded++;
-          if (loaded >= Math.ceil(totalFrames * 0.4)) hideLoader();
-        };
-        img.src = framePath(index);
-        frames[index - 1] = img;
-      })(i);
-    }
+    // Progressive load, in three passes. The page must not wait on the hero.
+    //   1. frame 1 alone, so something is on screen and the loader can lift
+    //   2. every Nth frame, so scrubbing works coarsely within a moment
+    //   3. everything else, at low priority, filling in behind the visitor
+    // drawFrame falls back to the nearest loaded frame, so a partially loaded
+    // sequence scrubs smoothly rather than freezing on gaps.
+    loadFrame(1, 'high');
+
+    var STRIDE = 5;
+    setTimeout(function () {
+      for (var i = 1 + STRIDE; i <= totalFrames; i += STRIDE) loadFrame(i, 'high');
+      setTimeout(function () {
+        for (var j = 2; j <= totalFrames; j++) loadFrame(j, 'low');
+      }, 60);
+    }, 0);
 
     if (reduceMotion || !hasGSAP) {
       // static first frame, no scrubbing
@@ -149,6 +186,7 @@
       .then(function (m) {
         var count = parseInt(m && m.count, 10);
         if (!count || count < 2) throw new Error('bad count');
+        if (m.ext) frameExt = String(m.ext).replace(/[^a-z0-9]/gi, '');
         startFrameSequence(count);
       })
       .catch(noFrames);
