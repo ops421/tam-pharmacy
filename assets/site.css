@@ -577,3 +577,36 @@ footer { padding: 56px 0 56px; border-top: 1px solid rgba(201,160,74,0.10); }
   .hero-sticky { padding: 116px 0 48px; }
   .legal-hero { padding: 150px 0 48px; }
 }
+
+/* ---------- print ----------
+   Patients print the injection guide and keep it with their supplies, so it
+   has to survive on paper: light ground, no fixed nav, no film grain, and
+   nothing that relies on colour alone. */
+@media print {
+  body { background: #fff !important; color: #111; }
+  body::after { display: none !important; }        /* film grain */
+  nav, footer .footer-top, .skip-link, .legal-toc { display: none !important; }
+  .legal-hero { padding: 0 0 18px; border-bottom: 1px solid #ccc; }
+  .legal-hero h1 { color: #111; font-size: 26pt; }
+  .eyebrow { color: #7a5c1e; }
+  .eyebrow::before { background: #7a5c1e; }
+  .legal-meta { color: #444; }
+  .legal-body { padding: 18px 0 0; }
+  .legal-body h2 {
+    color: #111; border-top: 1px solid #ddd; font-size: 13pt;
+    margin: 20px 0 8px; padding-top: 12px; break-after: avoid;
+  }
+  .legal-body p, .legal-body li { color: #222; font-size: 10.5pt; line-height: 1.5; }
+  .legal-body strong { color: #000; }
+  .legal-body a { color: #111; text-decoration: none; }
+  .legal-callout {
+    border: 1px solid #999; background: #f4f4f4; break-inside: avoid;
+    padding: 10px 12px;
+  }
+  .legal-body ol, .legal-body ul { break-inside: avoid; }
+  footer { border-top: 1px solid #ccc; padding: 12px 0 0; }
+  .footer-row { display: none; }
+  .footer-disclaimer { color: #444; font-size: 8.5pt; padding-right: 0; }
+  .container { width: 100%; }
+  @page { margin: 14mm; }
+}
