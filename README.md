@@ -146,4 +146,4 @@ reviewed by counsel.** Treat them as a solid first draft, not as legal advice.
 
 ## Contact used throughout
 
-525 Metroplex Dr, Nashville, TN 37211 · 888-423-5988 · contact@tampharmacy.com
+525 Metroplex Dr, Nashville, TN 37211 · 888-423-5988 · info@tampharmacy.com
